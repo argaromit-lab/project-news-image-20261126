@@ -24,8 +24,9 @@ the output directory when needed and copies the exact committed image bytes.
 ## Artwork and reporting
 
 `artwork.svg` is the original vector master, drawn by `tools/render.mjs` from
-the editorial ledger in `reporting.mjs`. The scene artwork, map outlines and
-layout are original code; no photographs or competitor artwork are included.
+the editorial ledger in `reporting.mjs`. Its original scene and layout modules
+are `tools/editorial-art.mjs` and `tools/edition.mjs`. The scene artwork, map
+outlines and layout are original code; no photographs or competitor artwork are included.
 The image is rendered at 2048 square in Chromium, downsampled with Lanczos3 to
 1024 square and encoded as a 256-colour PNG. Offline Georgia and Arial Narrow
 provide the typography. Rendering is a development task; the sandbox only
@@ -37,6 +38,12 @@ development package containing `playwright` and `sharp`, set
 `ATLAS_CHROME_PATH` to a Chromium executable. Run `node tools/render.mjs N1`.
 Use the same installed fonts for matching typography. Alternative rendering
 passes remain available for comparison; the runtime always copies `entry.png`.
+
+The default rebuild remains N1. The Q1 header, Q2 inset-map and Q3 parade-balloon
+experiments are reproducible with the same command and their respective tags.
+They remain review candidates: Q1 and Q2 did not improve balanced local critic
+feedback, and Q3's second critic was rate-limited. The reviewed N1 image is
+preserved byte for byte while those experiments remain available for later work.
 
 Each ledger entry names its source URL, outlet, event date, epistemic status,
 field and geographic anchor. Sources that expose only a publication date retain

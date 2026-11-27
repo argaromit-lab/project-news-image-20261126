@@ -2,14 +2,21 @@ import fs from 'node:fs';
 import path from 'node:path';
 import {createRequire} from 'node:module';
 import {stories,timeline,day} from '../reporting.mjs';
+import {coastlines,editorialScene} from './editorial-art.mjs';
+import {refineEdition} from './edition.mjs';
 const require=createRequire(process.env.ATLAS_RENDER_PACKAGES??'G:/kits/news-image-20261126-tools/package.json');
 const {chromium}=require('playwright');
 const sharp=require('sharp');
 const root=path.resolve(import.meta.dirname,'..');
 const pass=process.argv[2]??'N1';
-const illustrated=/^N[1-3]$/.test(pass);
+const refreshed=/^Q[1-3]$/.test(pass);
+const polished=/^P\d+$/.test(pass)||refreshed;
+const editorial=!refreshed&&polished&&Number(pass.slice(1))>=2;
+const spacious=!refreshed&&polished&&Number(pass.slice(1))>=3;
+const explicit=!refreshed&&polished&&Number(pass.slice(1))>=4;
+const illustrated=/^N[1-3]$/.test(pass)||polished;
 const expanded=pass==='N2';
-const insetMap=pass==='N3';
+const insetMap=pass==='N3'||pass==='P4';
 const continued=/^R[1-3]$/.test(pass)||illustrated;
 const copyfit=pass==='R2'||pass==='R3'||illustrated;
 const clarified=pass==='R3'||illustrated;
@@ -23,7 +30,8 @@ const alternate=pass==='H2'||hybrid;
 const lift=final||readable?80:alternate?60:0;
 const headerGain=expanded?14:0;
 const leadArtGain=expanded?34:0;
-const lowerShift=leadArtGain-headerGain;
+const compactLead=spacious?56:0;
+const lowerShift=leadArtGain-headerGain-compactLead;
 const P={paper:'#F7F3EB',ink:'#161616',rule:'#C8C0B0',navy:'#0E1E32',maroon:'#5C161B',emerald:'#0B3B2E',gold:'#FFD54F',muted:'#5D5A51',ocean:'#0B1F33',land:'#4B8B6B'};
 const regions={Asia:'#0D655B',Europe:'#244F78','Middle East':'#8E332A',Americas:'#966018',Africa:'#645C28',Oceania:'#754362',World:'#4C5766'};
 const states={OFFICIAL:'#145A32',OFFICIALS:'#0E6251',REPORTED:'#922B21',FORECAST:'#1B4F72',CLAIM:'#784212'};
@@ -74,7 +82,11 @@ function narrativeArt(name){
  }else if(name==='radar'){
   add(rect(0,0,600,240,'url(#blue)'));
   add(`<path d="M0 185V137H46V110H67V151H105V124H135V185H194V106H222V149H258V121H286V177H389V133H431V100H465V171H507V123H544V152H600V240H0Z" fill="#264651"/><path d="M433 142V59L440 31 447 59V142M420 84H460M434 20V33" fill="none" stroke="#88B5B3" stroke-width="3"/>`);
-  add(`<g data-narrative="falling-debris"><path d="M283 30L317 40 351 29 336 52 316 48 298 59Z" fill="#E7E8D4" stroke="#A6C3BF" stroke-width="2"/><path d="M315 17L320 61" stroke="#E7E8D4" stroke-width="6"/><path d="M334 67L351 62 344 78Z M366 91L382 85 376 103Z M398 116L417 111 409 131Z" fill="#F4D49B"/><path d="M341 61L329 48M372 84L358 69M406 109L391 94" stroke="#F0B26C" stroke-width="3" stroke-dasharray="5 4"/></g>`);
+  if(explicit){
+   add(`<g data-narrative="falling-debris"><path d="M319 68L281 38M319 68L356 38M319 68L279 98M319 68L355 94" stroke="#D8E0C9" stroke-width="7" stroke-linecap="round"/>`);
+   for(const [x,y] of [[281,38],[356,38],[279,98],[359,99]]){add(`<ellipse cx="${x}" cy="${y}" rx="25" ry="12" fill="#183441" stroke="#DDE6CF" stroke-width="4"/><path d="M${x-17} ${y}H${x+17}M${x} ${y-8}V${y+8}" stroke="#B3CDC2" stroke-width="2"/>`);}
+   add(`<rect x="304" y="52" width="31" height="33" rx="5" fill="#DCE5CB" stroke="#F2EDCE" stroke-width="2"/><circle cx="320" cy="78" r="6" fill="#274955"/><path d="M367 101L383 96 378 114Z M398 126L416 120 409 137Z" fill="#F4D49B"/><path d="M374 94L361 80M403 119L389 105" stroke="#F0B26C" stroke-width="3" stroke-dasharray="5 4"/></g>`);
+  }else add(`<g data-narrative="falling-debris"><path d="M283 30L317 40 351 29 336 52 316 48 298 59Z" fill="#E7E8D4" stroke="#A6C3BF" stroke-width="2"/><path d="M315 17L320 61" stroke="#E7E8D4" stroke-width="6"/><path d="M334 67L351 62 344 78Z M366 91L382 85 376 103Z M398 116L417 111 409 131Z" fill="#F4D49B"/><path d="M341 61L329 48M372 84L358 69M406 109L391 94" stroke="#F0B26C" stroke-width="3" stroke-dasharray="5 4"/></g>`);
   add(`<path d="M37 154V83H168V154Z" fill="#295B61" stroke="#93BEB1" stroke-width="3"/>`);
   for(let i=0;i<4;i++)add(circle(103,117,11+i*10,'none','stroke="#61C7AB" stroke-width="2"'));
   add(`<path d="M103 117L128 91" stroke="#FFE6A3" stroke-width="4"/><path d="M66 158L50 197H157L139 158" fill="#497B7C"/><path d="M168 105L253 61" stroke="#65D8BC" stroke-width="2" stroke-dasharray="5 6"/>`);
@@ -84,6 +96,7 @@ function narrativeArt(name){
  return `<g data-original-scene="${name}">${a.join('')}</g>`;
 }
 function art(name){
+ if(editorial){const scene=editorialScene(name);if(scene)return scene;}
  if(illustrated){const narrative=narrativeArt(name);if(narrative)return narrative;}
  let a=[];const add=s=>a.push(s);
  add(rect(0,0,600,240,'url(#'+(['summit','space','justice','memorial','pipeline'].includes(name)?'green':(['storm','servers','radar'].includes(name)?'blue':'red'))+')'));
@@ -204,7 +217,7 @@ put(`<svg xmlns="http://www.w3.org/2000/svg" width="2048" height="2048" viewBox=
 <linearGradient id="red" x2=".6" y2="1"><stop stop-color="#8A4233"/><stop offset="1" stop-color="#5C161B"/></linearGradient>
 <linearGradient id="shade" x1="0" y1="0" x2="0" y2="1"><stop offset=".35" stop-color="#000" stop-opacity="0"/><stop offset="1" stop-color="#000" stop-opacity=".75"/></linearGradient>
 </defs>${rect(0,0,2048,2048,P.paper)}`);
-put(text(32,expanded?38:49,'THE DAILY ATLAS',expanded?27:29,{weight:800}));
+put(text(32,expanded?38:49,'THE DAILY ATLAS',explicit?38:expanded?27:29,{weight:800}));
 put(text(2016,expanded?38:49,'44 STORIES   /   13 PICTURES   /   7 REGIONS',23,{weight:700,anchor:'end'}));
 put(line(32,66-(expanded?12:0),2016,66-(expanded?12:0),P.ink,5));
 put(text(32,165-headerGain,'Thursday 26 November 2026',100,{serif:true,weight:700,box:[32,70-headerGain,1984,120],id:'date'}));
@@ -214,15 +227,15 @@ if(!alternate)metrics.forEach((m,i)=>{let x=32+i*330.666;put(line(x,235,x,291));
 const regionW=1984/7;
 Object.entries(regions).forEach(([region,color],i)=>{let x=32+i*regionW;let count=stories.filter(s=>s.region===region).length;put(rect(x,305-lift-headerGain,regionW-2,32,color));put(text(x+regionW/2,328-lift-headerGain,`${region.toUpperCase()} ${count}`,19,{fill:'#FFF',weight:700,anchor:'middle'}));});
 put(rect(32,348-lift-headerGain,1984,deep?58:49,P.navy));put(rect(32,348-lift-headerGain,210,deep?58:49,P.maroon));put(text(46,(deep?383:379)-lift-headerGain,'THE DAY IN UTC',23,{fill:'#FFF',weight:800}));
-timeline.forEach(([time,label],i)=>{const slot=1742/timeline.length,x=258+i*slot;put(text(x,(deep?372:369)-lift-headerGain,time,deep?23:21,{fill:P.gold,weight:800}));put(text(x,(deep?397:388)-lift-headerGain,label,deep?19:16,{fill:'#FFF',box:[x,(deep?377:371)-lift-headerGain,slot-12,deep?26:22]}));});
+timeline.forEach(([time,label],i)=>{const slot=1742/timeline.length,x=258+i*slot;if(editorial)put(rect(x-8,350-lift-headerGain,slot-10,54,i%2?P.navy:'#173448',`stroke="#577076" stroke-width="1"`));put(text(x,(deep?372:369)-lift-headerGain,time,deep?23:21,{fill:P.gold,weight:800}));put(text(x,(deep?397:388)-lift-headerGain,label,deep?19:16,{fill:'#FFF',box:[x,(deep?377:371)-lift-headerGain,slot-12,deep?26:22]}));});
 
 const cards=[];
 for(let i=0;i<13;i++){
  const lead=i<3,row=lead?0:(i<8?1:2),col=lead?i:(i-3)%5;
  const w=lead?(1984-36)/3:(1984-64)/5;
  const x=32+col*(w+(lead?18:16));
- const y=(lead?416-headerGain:(row===1?818:1116)+lowerShift)-lift,h=lead?390+leadArtGain:286,ah=lead?164+leadArtGain:116;
- const s=stories[i]; cards.push({id:s.id,x,y,w,h,artHeight:ah});
+ const y=(lead?416-headerGain:(row===1?818:1116)+lowerShift)-lift,h=lead?390+leadArtGain-compactLead:286,ah=lead?164+leadArtGain:116;
+const s=stories[i]; cards.push({id:s.id,x,y,w,h,artHeight:ah});
  put(`<g data-story="${s.id}">${rect(x,y,w,h,'#FBF8F0',`stroke="${P.rule}" stroke-width="1.5"`)}`);
  put(`<svg x="${x}" y="${y}" width="${w}" height="${ah}" viewBox="0 0 600 240" preserveAspectRatio="none">${art(s.scene)}</svg>`);
  put(rect(x,y+ah-74,w,74,'url(#shade)'));
@@ -231,15 +244,17 @@ for(let i=0;i<13;i++){
  put(text(x+24,y+30,s.id,19,{weight:800,fill:'#FFF',anchor:'middle'}));
   put(text(x+14,y+ah-37,scenic&&s.id===11?'168':s.stamp,44,{weight:800,fill:P.gold,box:[x+12,y+ah-83,w-24,55],id:`stamp-${s.id}`}));
   if(scenic&&s.id===11)put(text(x+112,y+ah-39,'REMEMBERED',22,{weight:800,fill:P.gold,box:[x+110,y+ah-70,w-124,40],id:'scene-note-11'}).replace('<text ','<text data-related-stamp="stamp-11" '));
- const badgeW=20+s.status.length*11;
+ const statusLabel=spacious&&s.status==='OFFICIALS'?'OFFICIALS SAY':s.status;
+ const badgeW=20+statusLabel.length*11;
   put(rect(x+w-badgeW-12,y+ah-28,badgeW,25,states[s.status],clarified?'stroke="#F7F3EB" stroke-width="1.5"':''));
- put(text(x+w-badgeW/2-12,y+ah-10,s.status,hybrid?19:17,{weight:800,fill:'#FFF',anchor:'middle'}));
- put(text(x+12,y+ah+(lead?25:22),`${s.region.toUpperCase()} · ${s.place.toUpperCase()}`,lead?21:17,{weight:700,fill:regions[s.region],box:[x+12,y+ah+3,w-24,26]}));
- const hs=lead?46:29,hy=y+ah+(lead?74:56),lh=lead?54:32;
- s.headline.split('|').forEach((v,k)=>put(text(x+12,hy+k*lh,v,hs,{serif:true,weight:700,box:[x+12,hy-hs,w-24,lh*2+16],id:`headline-${s.id}-${k}`})));
- const sy=y+(lead?ah+163:235),ss=lead?25:21,sl=lead?29:24;
-  s.detail.split('|').forEach((v,k)=>put(text(x+12,sy+k*sl,v,ss,{weight:clarified&&!lead?600:400,box:[x+12,sy-ss-(clarified&&!lead?2:0),w-24,sl*2+7],id:`summary-${s.id}-${k}`})));
- put(text(x+12,y+h-(lead?11:(deep?6:7)),`SOURCE: ${s.outlet}`,lead?19:(deep?16.5:15),{fill:P.muted,weight:deep?600:400,box:[x+12,y+h-30,w-24,28]}));
+ put(text(x+w-badgeW/2-12,y+ah-10,statusLabel,hybrid?19:17,{weight:800,fill:'#FFF',anchor:'middle'}));
+ put(text(x+12,y+ah+(lead?(polished?21:25):22),`${s.region.toUpperCase()} · ${s.place.toUpperCase()}`,lead?21:(polished?18:17),{weight:700,fill:regions[s.region],box:[x+12,y+ah+(polished?0:3),w-24,29]}));
+ const hs=lead?(polished?50:46):(polished?32:29),hy=y+ah+(lead?(polished?72:74):56),lh=lead?(polished?56:54):(polished?35:32);
+ const headline=spacious&&lead?({1:'Kyiv aid at stake',2:'100th parade delayed',3:'Two Italians killed'}[s.id]):polished&&s.id===2?'Storm halts NYC’s|100th parade':polished&&s.id===3?'Kuwait says|two Italians killed':s.headline;
+ headline.split('|').forEach((v,k)=>put(text(x+12,hy+k*lh,v,hs,{serif:true,weight:700,box:[x+12,hy-hs,w-24,lh*2+16],id:`headline-${s.id}-${k}`})));
+ const sy=y+(lead?ah+(polished?164:163)-compactLead:235),ss=lead?25:21,sl=lead?29:24;
+  s.detail.split('|').forEach((v,k)=>put(text(x+12,sy+k*sl,v,ss,{weight:polished||clarified&&!lead?600:400,box:[x+12,sy-ss-(clarified&&!lead||polished?2:0),w-24,sl*2+7],id:`summary-${s.id}-${k}`})));
+ put(text(x+12,y+h-(lead?(polished?7:11):(deep?6:7)),`SOURCE: ${s.outlet}`,lead?19:(deep?16.5:15),{fill:P.muted,weight:deep?600:400,box:[x+12,y+h-30,w-24,30]}));
  put('</g>');
 }
 
@@ -249,9 +264,10 @@ if(!upgrade){put(text(590,1436-lift,'31 MORE REPORTS FROM THURSDAY',24,{weight:8
 put(text(2016,1440-lift,'Numbers connect every story to the map',18,{fill:P.muted,anchor:'end'}));}
 
 // Original simplified geographic outlines; anchors use actual geographic positions.
+put('<g data-atlas-map="true">');
 const map={x:32,y:1455-lift+lowerShift,w:535,h:402+lift-lowerShift};
 put(rect(map.x,map.y,map.w,map.h,P.ocean));
-const plot={x:45,y:1480-lift+lowerShift,w:509,h:insetMap?250:315+lift-lowerShift};
+const plot={x:45,y:1480-lift+lowerShift,w:509,h:insetMap?(spacious?300:250):315+lift-(spacious?0:lowerShift)};
 const project=(lon,lat)=>[plot.x+(lon+180)/360*plot.w,plot.y+(83-lat)/147*plot.h];
 for(let lat=-40;lat<=80;lat+=40){let y=project(0,lat)[1];put(line(plot.x,y,plot.x+plot.w,y,'#325467',1,'opacity=".5"'));}
 for(let lon=-120;lon<=120;lon+=60){let x=project(lon,0)[0];put(line(x,plot.y,x,plot.y+plot.h,'#325467',1,'opacity=".5"'));}
@@ -267,7 +283,7 @@ const land=[
 [[130,31],[141,42],[145,44],[140,36]],
 [[96,5],[107,-6],[116,-8],[122,-7],[131,-4],[137,-5],[131,-9],[115,-11],[104,-8]]
 ];
-land.forEach(shape=>put(poly(shape.map(([lon,lat])=>project(lon,lat).join(',')).join(' '),P.land,`stroke="#8DB299" stroke-width="1.4" stroke-linejoin="round"`)));
+(polished?coastlines:land).forEach(shape=>put(poly(shape.map(([lon,lat])=>project(lon,lat).join(',')).join(' '),P.land,`stroke="#8DB299" stroke-width="1.4" stroke-linejoin="round"`)));
 const areas={world:plot};
 const detailSets={europe:new Set([16,27,28,29,30,31,37]),asia:new Set([14,15,20,34,35,36,38,39,44])};
 if(insetMap){
@@ -278,9 +294,9 @@ if(insetMap){
   areas[key]=area;
   put(`<g data-map-detail="${key}">${rect(x,y,w,h,'#102D3B',`stroke="#88A296" stroke-width="1.4"`)}`);
   put(`<defs><clipPath id="detail-${key}"><rect x="${area.x}" y="${area.y}" width="${area.w}" height="${area.h}"/></clipPath></defs><g clip-path="url(#detail-${key})">`);
-  land.forEach(shape=>put(poly(shape.map(([lon,lat])=>area.project(lon,lat).join(',')).join(' '),'#376D57','stroke="#82A78A" stroke-width="1.2"')));
+  (polished?coastlines:land).forEach(shape=>put(poly(shape.map(([lon,lat])=>area.project(lon,lat).join(',')).join(' '),'#376D57','stroke="#82A78A" stroke-width="1.2"')));
   put('</g>');
-  put(text(x+10,y+22,`${key.toUpperCase()} DETAIL · ${detailSets[key].size}`,18,{weight:800,fill:'#F5E7BF',id:`map-detail-title-${key}`}));
+  put(text(x+10,y+22,`${key.toUpperCase()} DETAIL · ${detailSets[key].size}`,polished?21:18,{weight:800,fill:'#F5E7BF',id:`map-detail-title-${key}`}));
   put('</g>');
   const [left,top]=project(area.lonMin,area.latMax),[right,bottom]=project(area.lonMax,area.latMin);
   put(rect(left,top,right-left,bottom-top,'none','stroke="#F0D69B" stroke-width="1.5" stroke-dasharray="4 4"'));
@@ -289,28 +305,31 @@ if(insetMap){
 const pins=stories.filter(s=>s.lat!==null).map(s=>{
  const area=insetMap&&detailSets.europe.has(s.id)?'europe':insetMap&&detailSets.asia.has(s.id)?'asia':'world';
  const [ax,ay]=area==='world'?project(s.lon,s.lat):areas[area].project(s.lon,s.lat);
- return{id:s.id,region:s.region,area,ax,ay,x:ax+(s.id%3-1)*9,y:ay+(s.id%4-1.5)*9,r:s.id<=13?(alternate?16:13):area!=='world'?12:(final||continued?11:10)};
+ return{id:s.id,region:s.region,area,ax,ay,x:ax+(s.id%3-1)*9,y:ay+(s.id%4-1.5)*9,r:s.id<=13?(alternate?16:13):area!=='world'?(polished?13:12):(polished?13:final||continued?11:10)};
 });
-for(let k=0;k<240;k++){
+for(let k=0;k<(polished?720:240);k++){
  for(let i=0;i<pins.length;i++){
   const p=pins[i];
-  p.x+=(p.ax-p.x)*(alternate?.012:.018);p.y+=(p.ay-p.y)*(alternate?.012:.018);
+   const attraction=editorial&&!spacious&&p.id<=13?.023:polished?.004:alternate?.012:.018;
+   p.x+=(p.ax-p.x)*attraction;p.y+=(p.ay-p.y)*attraction;
   for(let j=i+1;j<pins.length;j++){
    const q=pins[j];if(p.area!==q.area)continue;
-   const dx=q.x-p.x,dy=q.y-p.y,d=Math.hypot(dx,dy)||.1,min=p.r+q.r+(clarified?9:alternate?5:3);
-   if(d<min){const v=(min-d)*.52;const ux=d===.1?.7:dx/d,uy=d===.1?.7:dy/d;p.x-=ux*v;p.y-=uy*v;q.x+=ux*v;q.y+=uy*v;}
+   const dx=q.x-p.x,dy=q.y-p.y,d=Math.hypot(dx,dy)||.1,min=p.r+q.r+(polished?12:clarified?9:alternate?5:3);
+   if(d<min){const v=(min-d)*.52;const ux=d===.1?.7:dx/d,uy=d===.1?.7:dy/d;const pm=editorial&&!spacious?(p.id<=13?1:6):1,qm=editorial&&!spacious?(q.id<=13?1:6):1,total=pm+qm;p.x-=ux*v*2*pm/total;p.y-=uy*v*2*pm/total;q.x+=ux*v*2*qm/total;q.y+=uy*v*2*qm/total;}
   }
    const area=areas[p.area],edge=p.area==='world'?15:p.r+6;
    p.x=Math.max(area.x+edge,Math.min(area.x+area.w-edge,p.x));p.y=Math.max(area.y+edge,Math.min(area.y+area.h-edge,p.y));
  }
 }
 pins.forEach(p=>put(line(p.ax,p.ay,p.x,p.y,'#ACC4B5',1.2,'opacity=".8"')));
-pins.forEach(p=>{put(circle(p.ax,p.ay,2,'#EBD4A5'));if(clarified)put(circle(p.x,p.y,p.r+2.5,P.ocean));put(circle(p.x,p.y,p.r,p.id<=13&&alternate?P.gold:regions[p.region],`stroke="${p.id<=13?P.gold:'#E5E0C6'}" stroke-width="${p.id<=13?2:1}" data-pin="${p.id}" data-map-zone="${p.area}"`));put(text(p.x,p.y+(p.id<=13?5:4),p.id,p.id<=13?(alternate?19:17):p.area!=='world'?18:(final||continued?14:13),{weight:800,fill:p.id<=13&&alternate?P.ocean:'#FFF',anchor:'middle',id:`map-number-${p.id}`}));});
+pins.forEach(p=>{put(circle(p.ax,p.ay,2,'#EBD4A5'));if(clarified)put(circle(p.x,p.y,p.r+2.5,P.ocean));put(circle(p.x,p.y,p.r,p.id<=13&&alternate?P.gold:regions[p.region],`stroke="${p.id<=13?P.gold:'#E5E0C6'}" stroke-width="${p.id<=13?2:1}" data-pin="${p.id}" data-map-zone="${p.area}" data-anchor-x="${p.ax}" data-anchor-y="${p.ay}"`));put(text(p.x,p.y+(p.id<=13?5:4),p.id,p.id<=13?(polished?20:alternate?19:17):p.area!=='world'?(polished?20:18):(polished?18:final||continued?14:13),{weight:800,fill:p.id<=13&&alternate?P.ocean:'#FFF',anchor:'middle',id:`map-number-${p.id}`}));});
+if(spacious&&!insetMap){put(circle(62,1784,8,P.gold));put(text(77,1791,'1–13 FEATURES',20,{fill:'#F5E7BF',weight:700}));put(rect(291,1776,17,17,regions.Asia));put(text(319,1791,'14–44 BRIEFS',20,{fill:'#F5E7BF',weight:700}));}
 put(rect(44,1811,511,33,'#173B4A'));put(text(55,1834,'8  ISS ORBIT   ·   17  GLOBAL SHIPPING',20,{weight:700,fill:'#F2D89D'}));
 put(text(32,1884,insetMap?'World + Europe / Asia details; leaders mark anchors.':'Pins are displaced for clarity; leaders mark anchors.',18,{fill:P.muted}));
 put(text(32,1909,'Borders simplified. 1–13 features; 14–44 briefs.',18,{fill:P.muted}));
+put('</g>');
 
-const briefs=stories.slice(13),cw=466,briefY=1464-lift+lowerShift,rowH=expanded?49:readable?51:final?50.5:alternate?49:44;
+const briefs=stories.slice(13),cw=466,briefY=1464-lift+lowerShift,rowH=spacious?56:expanded?49:readable?51:final?50.5:alternate?49:44;
 // Compact display paraphrases retain the complete reporting in the source ledger.
 const briefCopy={
  14:'77th anniversary of its adoption.',
@@ -345,6 +364,19 @@ const briefCopy={
  43:'AFP: aid cuts fuel armed-group recruitment.',
  44:'Beats India A by 8 wickets in Doha.'
 };
+const spaciousHeads={20:'Samarkand women’s refuge',22:'Mexico urges Asian partners',24:'Milei off inaugural guest list',26:'Climate scientist Jocelyn Turnbull',28:'Berlin trial over Russia spying',31:'European tech and banks rally',34:'Seoul nominee Hong Ihk-pyo',36:'ASEAN+3 digital-pay talks',41:'Saudi ministry: worker killed',43:'Nigeria aid cuts fuel recruitment'};
+const spaciousCopy={
+ 14:'77 years since adoption.',15:'Tributes 18 years after the attacks.',16:'Gukesh–Sindarov, Geneva.',
+ 17:'Conflict, climate hit trade.',18:'UN boosts Ituri civilian safety.',19:'Nairobi meeting, Nov 26–27.',
+ 20:'A crisis centre is profiled.',21:'Ends BRICS-bank bid.',22:'To curb tariff evasion.',
+ 23:'Fuel incentives audit sought.',24:'Brazilian source confirms no invite.',25:'Final count due Friday.',
+ 26:'Wins Kidson Medal.',27:'Court backs trial; he denies rape.',28:'Woman faces court.',
+ 29:'First winter walkout hits travel.',30:'Speaker sets Dec 27 election.',31:'Tariff fears ease.',
+ 32:'Ghana/Uganda/Zambia to fall.',33:'Final LNG vote: February.',34:'Pledges realism on North Korea.',
+ 35:'Over South China Sea stance.',36:'Cross-border links sought.',37:'Diplomats back Hernández de Cos.',
+ 38:'FT: halt to 4 SE Asian states.',39:'Tokyo: free journalist held in Russia.',40:'Houthi spokesman: four dead in Taiz.',
+ 41:'Nepali dies in refinery attack.',42:'UKMTO: crew safe west of Dubai.',43:'Armed groups gain recruits.',44:'Beats India A by 8 wickets in Doha.'
+};
 const groups=[['Asia','World'],['Europe','Americas'],['Africa','Oceania','Middle East']];
 const columnLabels=['ASIA + GLOBAL','EUROPE + AMERICAS','AFRICA + OCEANIA + MIDDLE EAST'];
 const columns=upgrade?groups.map(group=>group.flatMap(region=>briefs.filter(s=>s.region===region))):[briefs.slice(0,11),briefs.slice(11,21),briefs.slice(21)];
@@ -359,12 +391,12 @@ columns.forEach((col,c)=>{
   put(rect(x,y-18,29,25,regions[s.region]));put(text(x+14.5,y+1,s.id,17,{fill:'#FFF',weight:800,anchor:'middle'}));
   const caution=s.status==='CLAIM'?' [CLAIM]':s.status==='FORECAST'?' [FORECAST]':'';
   const statusWidth=copyfit&&caution?24+s.status.length*8.5:0;
-  put(text(x+38,y,s.headline,alternate?22.5:21,{weight:700,box:[x+38,y-25,cw-43-(statusWidth?statusWidth+12:0),31],id:`brief-head-${s.id}`}));
+  put(text(x+38,y,spacious?(spaciousHeads[s.id]??s.headline):s.headline,spacious?24:alternate?22.5:21,{weight:700,box:[x+38,y-27,cw-43-(statusWidth?statusWidth+12:0),33],id:`brief-head-${s.id}`}));
   if(statusWidth){
    put(rect(x+cw-statusWidth,y-20,statusWidth,24,states[s.status],`data-brief-status="${s.id}"`));
    put(text(x+cw-statusWidth/2,y-2,s.status,16,{weight:800,fill:'#FFF',anchor:'middle',id:`brief-status-${s.id}`}));
   }
-  put(text(x+38,y+(alternate?24:21),`${copyfit?briefCopy[s.id]:s.detail}${copyfit?'':caution} — ${s.outlet}`,copyfit?21.5:readable?20:alternate?19:17,{weight:final||continued?600:400,box:[x+38,y+(copyfit?0:continued?4:alternate?6:4),cw-43,33],id:`brief-body-${s.id}`}));
+  put(text(x+38,y+(spacious?27:alternate?24:21),`${spacious?spaciousCopy[s.id]:copyfit?briefCopy[s.id]:s.detail}${copyfit?'':caution} — ${s.outlet}`,spacious?24:copyfit?21.5:readable?20:alternate?19:17,{weight:final||continued?600:400,box:[x+38,y+(spacious?3:copyfit?0:continued?4:alternate?6:4),cw-43,35],id:`brief-body-${s.id}`}));
   put('</g>');
  });
  put('</g>');
@@ -384,6 +416,7 @@ const page=await browser.newPage({viewport:{width:2048,height:2048},deviceScaleF
 let errors=[];page.on('pageerror',e=>errors.push(e.message));page.on('console',m=>{if(m.type()==='error')errors.push(m.text());});
 await page.setContent((illustrated?'<style>html,body{margin:0;background:#F7F3EB}svg{display:block}</style>':'')+source);
 await page.evaluate(()=>document.fonts.ready);
+if(refreshed)await page.evaluate(refineEdition,{pass,stories,coastlines,palette:P,regions});
 // Fit only within assigned text zones; preserve the intentionally larger hierarchy.
 const fitted=await page.evaluate(({final,scenic})=>{
  const fitted=[];
@@ -425,7 +458,9 @@ const geometry=await page.evaluate(()=>{
  }
  const briefSizes=Array.from(document.querySelectorAll('[id^="brief-body-"]')).map(t=>Number(t.getAttribute('font-size')));
   const sceneOcclusion=[...document.querySelectorAll('[data-story]')].map(g=>{const scene=g.querySelector('svg'),backdrop=g.querySelector('[data-stamp-backdrop]');return{id:Number(g.dataset.story),ratio:backdrop?Number(backdrop.getAttribute('width'))*Number(backdrop.getAttribute('height'))/(Number(scene.getAttribute('width'))*Number(scene.getAttribute('height'))):0};});
-  return{checkedTextNodes:all.length,failures,briefBodyFontMin:Math.min(...briefSizes),briefBodyFontMean:briefSizes.reduce((a,b)=>a+b,0)/briefSizes.length,sceneOcclusion};
+   const mapPins=[...document.querySelectorAll('[data-pin]')].map(p=>({x:+p.getAttribute('cx'),y:+p.getAttribute('cy'),r:+p.getAttribute('r'),ax:+p.dataset.anchorX,ay:+p.dataset.anchorY}));
+   const pinGaps=mapPins.flatMap((p,i)=>mapPins.slice(i+1).map(q=>Math.hypot(p.x-q.x,p.y-q.y)-p.r-q.r));
+   return{checkedTextNodes:all.length,failures,briefBodyFontMin:Math.min(...briefSizes),briefBodyFontMean:briefSizes.reduce((a,b)=>a+b,0)/briefSizes.length,sceneOcclusion,minPinGap:Math.min(...pinGaps),meanLeaderLength:mapPins.reduce((sum,p)=>sum+Math.hypot(p.x-p.ax,p.y-p.ay),0)/mapPins.length};
 });
 const master=path.join(root,'.makefun-kit',`${pass}-master.png`);
 await page.screenshot({path:master});
@@ -434,8 +469,7 @@ const image=await sharp(master).resize(1024,1024,{kernel:'lanczos3'}).png({compr
 fs.writeFileSync(path.join(root,'entry.png'),image);
 fs.writeFileSync(path.join(root,'.makefun-kit',`${pass}-entry.png`),image);
 await sharp(image).resize(300,300,{kernel:'lanczos3'}).png().toFile(path.join(root,'.makefun-kit',`${pass}-300.png`));
-const pinDistances=pins.flatMap((p,i)=>pins.slice(i+1).map(q=>Math.hypot(p.x-q.x,p.y-q.y)-p.r-q.r));
-const audit={pass,storyCount:stories.length,featureCount:13,briefCount:briefs.length,regionCount:Object.keys(regions).length,bytes:image.length,dimensions:[1024,1024],consoleErrors:errors,fitted,...geometry,minPinGap:Math.min(...pinDistances),meanLeaderLength:pins.reduce((s,p)=>s+Math.hypot(p.x-p.ax,p.y-p.ay),0)/pins.length};
+const audit={pass,storyCount:stories.length,featureCount:13,briefCount:briefs.length,regionCount:Object.keys(regions).length,bytes:image.length,dimensions:[1024,1024],consoleErrors:errors,fitted,...geometry};
 fs.writeFileSync(path.join(root,'.makefun-kit',`${pass}-audit.json`),JSON.stringify(audit,null,2));
 console.log(JSON.stringify({pass,stories:stories.length,bytes:image.length,textNodes:geometry.checkedTextNodes,failures:geometry.failures.length,consoleErrors:errors.length,minPinGap:audit.minPinGap,fitted:fitted.length}));
 if(geometry.failures.length||errors.length||image.length>=900000)process.exitCode=1;
