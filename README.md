@@ -54,7 +54,7 @@ Officials' statements and unverified allegations are attributed explicitly.
 ESNZ in the image means Earth Sciences New Zealand. To regenerate the vector
 master, install `playwright` and `sharp` in an external development directory,
 set `ATLAS_RENDER_PACKAGES` to that directory's `package.json`, and set
-`ATLAS_CHROME_PATH` to its Chromium executable. Run `node tools/render.mjs H4`.
+`ATLAS_CHROME_PATH` to its Chromium executable. Run `node tools/render.mjs H3`.
 This development renderer is separate from the dependency-free sandbox entry.
 
 ## License
