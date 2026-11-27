@@ -23,8 +23,10 @@ the output directory when needed and copies the exact committed image bytes.
 
 ## Artwork and reporting
 
-`artwork.svg` is the original vector master, drawn by `tools/render.mjs` from
-the editorial ledger in `reporting.mjs`. Its original scene and layout modules
+`artwork.svg` is a generated development output of `tools/render.mjs`, using
+the editorial ledger in `reporting.mjs`. It is retained locally for inspection
+and excluded from source control; the submitted runtime needs only `entry.png`.
+The original scene and layout modules
 are `tools/editorial-art.mjs` and `tools/edition.mjs`. The scene artwork, map
 outlines and layout are original code; no photographs or competitor artwork are included.
 The image is rendered at 2048 square in Chromium, downsampled with Lanczos3 to
