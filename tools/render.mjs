@@ -6,12 +6,18 @@ const require=createRequire(process.env.ATLAS_RENDER_PACKAGES??'G:/kits/news-ima
 const {chromium}=require('playwright');
 const sharp=require('sharp');
 const root=path.resolve(import.meta.dirname,'..');
-const pass=process.argv[2]??'H3';
+const pass=process.argv[2]??'R3';
+const continued=/^R[1-3]$/.test(pass);
+const copyfit=pass==='R2'||pass==='R3';
+const clarified=pass==='R3';
+const upgrade=/^U[1-4]$/.test(pass)||continued;
+const readable=/^U[2-4]$/.test(pass)||continued;
+const scenic=/^U[3-4]$/.test(pass)||continued;
 const deep=pass!=='H0';
 const final=pass==='H4';
-const hybrid=pass==='H3'||final;
+const hybrid=pass==='H3'||final||upgrade;
 const alternate=pass==='H2'||hybrid;
-const lift=final?80:alternate?60:0;
+const lift=final||readable?80:alternate?60:0;
 const P={paper:'#F7F3EB',ink:'#161616',rule:'#C8C0B0',navy:'#0E1E32',maroon:'#5C161B',emerald:'#0B3B2E',gold:'#FFD54F',muted:'#5D5A51',ocean:'#0B1F33',land:'#4B8B6B'};
 const regions={Asia:'#0D655B',Europe:'#244F78','Middle East':'#8E332A',Americas:'#966018',Africa:'#645C28',Oceania:'#754362',World:'#4C5766'};
 const states={OFFICIAL:'#145A32',OFFICIALS:'#0E6251',REPORTED:'#922B21',FORECAST:'#1B4F72',CLAIM:'#784212'};
@@ -138,6 +144,12 @@ function art(name){
   if(hybrid&&name==='radar'){
    add(`<path d="M277 112L292 107 288 122Z M310 136L329 129 319 146Z M347 102L363 99 356 112Z" fill="#EDE4CD"/><path d="M294 104L305 92M332 126L345 110" stroke="#F6C783" stroke-width="2" stroke-dasharray="4 4"/>`);
   }
+  if(scenic&&name==='storm'){
+   add(`<path d="M281 57L315 70 284 85Z" fill="#E1A04E" stroke="#FBE2A8" stroke-width="2"/><circle cx="255" cy="54" r="5" fill="#193C44"/><circle cx="254" cy="52" r="1.6" fill="#FFF4D7"/><path d="M160 67Q192 43 235 70Q206 101 172 92Z" fill="#B8885E" stroke="#F1D19B" stroke-width="2"/>`);
+  }
+  if(scenic&&name==='road'){
+   add(`<path d="M408 89L432 101 456 89" fill="none" stroke="#FFF0BD" stroke-width="3"/><circle cx="416" cy="112" r="17" fill="#253B3F" stroke="#D6D9C7" stroke-width="7"/><circle cx="452" cy="112" r="17" fill="#253B3F" stroke="#D6D9C7" stroke-width="7"/><path d="M431 110H437M411 98L405 105M447 98L441 105" stroke="#FFF5D9" stroke-width="4"/>`);
+  }
   if(deep)add(`<path d="M0 231H600" stroke="#F3D09B" stroke-width="2" opacity=".15"/>`);
  return a.join('');
 }
@@ -173,23 +185,24 @@ for(let i=0;i<13;i++){
  if(hybrid)put(rect(x+8,y+ah-76,w-16,48,P.navy,`opacity=".92" data-stamp-backdrop="stamp-${s.id}"`));
  put(circle(x+24,y+24,17,regions[s.region],`stroke="#FFF3D9" stroke-width="2"`));
  put(text(x+24,y+30,s.id,19,{weight:800,fill:'#FFF',anchor:'middle'}));
- put(text(x+14,y+ah-37,s.stamp,44,{weight:800,fill:P.gold,box:[x+12,y+ah-83,w-24,55],id:`stamp-${s.id}`}));
+  put(text(x+14,y+ah-37,scenic&&s.id===11?'168':s.stamp,44,{weight:800,fill:P.gold,box:[x+12,y+ah-83,w-24,55],id:`stamp-${s.id}`}));
+  if(scenic&&s.id===11)put(text(x+112,y+ah-39,'REMEMBERED',22,{weight:800,fill:P.gold,box:[x+110,y+ah-70,w-124,40],id:'scene-note-11'}).replace('<text ','<text data-related-stamp="stamp-11" '));
  const badgeW=20+s.status.length*11;
- put(rect(x+w-badgeW-12,y+ah-28,badgeW,25,states[s.status]));
+  put(rect(x+w-badgeW-12,y+ah-28,badgeW,25,states[s.status],clarified?'stroke="#F7F3EB" stroke-width="1.5"':''));
  put(text(x+w-badgeW/2-12,y+ah-10,s.status,hybrid?19:17,{weight:800,fill:'#FFF',anchor:'middle'}));
  put(text(x+12,y+ah+(lead?25:22),`${s.region.toUpperCase()} · ${s.place.toUpperCase()}`,lead?21:17,{weight:700,fill:regions[s.region],box:[x+12,y+ah+3,w-24,26]}));
  const hs=lead?46:29,hy=y+ah+(lead?74:56),lh=lead?54:32;
  s.headline.split('|').forEach((v,k)=>put(text(x+12,hy+k*lh,v,hs,{serif:true,weight:700,box:[x+12,hy-hs,w-24,lh*2+16],id:`headline-${s.id}-${k}`})));
  const sy=y+(lead?ah+163:235),ss=lead?25:21,sl=lead?29:24;
- s.detail.split('|').forEach((v,k)=>put(text(x+12,sy+k*sl,v,ss,{box:[x+12,sy-ss,w-24,sl*2+5],id:`summary-${s.id}-${k}`})));
+  s.detail.split('|').forEach((v,k)=>put(text(x+12,sy+k*sl,v,ss,{weight:clarified&&!lead?600:400,box:[x+12,sy-ss-(clarified&&!lead?2:0),w-24,sl*2+7],id:`summary-${s.id}-${k}`})));
  put(text(x+12,y+h-(lead?11:(deep?6:7)),`SOURCE: ${s.outlet}`,lead?19:(deep?16.5:15),{fill:P.muted,weight:deep?600:400,box:[x+12,y+h-30,w-24,28]}));
  put('</g>');
 }
 
 put(line(32,1411-lift,2016,1411-lift,P.ink,3));
 put(text(32,1436-lift,'WHERE IT HAPPENED',24,{weight:800}));
-put(text(590,1436-lift,'31 MORE REPORTS FROM THURSDAY',24,{weight:800}));
-put(text(2016,1440-lift,'Numbers connect every story to the map',18,{fill:P.muted,anchor:'end'}));
+if(!upgrade){put(text(590,1436-lift,'31 MORE REPORTS FROM THURSDAY',24,{weight:800}));
+put(text(2016,1440-lift,'Numbers connect every story to the map',18,{fill:P.muted,anchor:'end'}));}
 
 // Original simplified geographic outlines; anchors use actual geographic positions.
 const map={x:32,y:1455-lift,w:535,h:402+lift};
@@ -211,36 +224,82 @@ const land=[
 [[96,5],[107,-6],[116,-8],[122,-7],[131,-4],[137,-5],[131,-9],[115,-11],[104,-8]]
 ];
 land.forEach(shape=>put(poly(shape.map(([lon,lat])=>project(lon,lat).join(',')).join(' '),P.land,`stroke="#8DB299" stroke-width="1.4" stroke-linejoin="round"`)));
-const pins=stories.filter(s=>s.lat!==null).map(s=>{let [ax,ay]=project(s.lon,s.lat);return{id:s.id,region:s.region,ax,ay,x:ax+(s.id%3-1)*9,y:ay+(s.id%4-1.5)*9,r:s.id<=13?(alternate?16:13):(final?11:10)};});
+const pins=stories.filter(s=>s.lat!==null).map(s=>{let [ax,ay]=project(s.lon,s.lat);return{id:s.id,region:s.region,ax,ay,x:ax+(s.id%3-1)*9,y:ay+(s.id%4-1.5)*9,r:s.id<=13?(alternate?16:13):(final||continued?11:10)};});
 for(let k=0;k<240;k++){
  for(let i=0;i<pins.length;i++){
   const p=pins[i];
   p.x+=(p.ax-p.x)*(alternate?.012:.018);p.y+=(p.ay-p.y)*(alternate?.012:.018);
   for(let j=i+1;j<pins.length;j++){
-   const q=pins[j],dx=q.x-p.x,dy=q.y-p.y,d=Math.hypot(dx,dy)||.1,min=p.r+q.r+(alternate?5:3);
+   const q=pins[j],dx=q.x-p.x,dy=q.y-p.y,d=Math.hypot(dx,dy)||.1,min=p.r+q.r+(clarified?9:alternate?5:3);
    if(d<min){const v=(min-d)*.52;const ux=d===.1?.7:dx/d,uy=d===.1?.7:dy/d;p.x-=ux*v;p.y-=uy*v;q.x+=ux*v;q.y+=uy*v;}
   }
   p.x=Math.max(plot.x+15,Math.min(plot.x+plot.w-15,p.x));p.y=Math.max(plot.y+15,Math.min(plot.y+plot.h-15,p.y));
  }
 }
 pins.forEach(p=>put(line(p.ax,p.ay,p.x,p.y,'#ACC4B5',1.2,'opacity=".8"')));
-pins.forEach(p=>{put(circle(p.ax,p.ay,2,'#EBD4A5'));put(circle(p.x,p.y,p.r,p.id<=13&&alternate?P.gold:regions[p.region],`stroke="${p.id<=13?P.gold:'#E5E0C6'}" stroke-width="${p.id<=13?2:1}" data-pin="${p.id}"`));put(text(p.x,p.y+(p.id<=13?5:4),p.id,p.id<=13?(alternate?19:17):(final?14:13),{weight:800,fill:p.id<=13&&alternate?P.ocean:'#FFF',anchor:'middle'}));});
+pins.forEach(p=>{put(circle(p.ax,p.ay,2,'#EBD4A5'));if(clarified)put(circle(p.x,p.y,p.r+2.5,P.ocean));put(circle(p.x,p.y,p.r,p.id<=13&&alternate?P.gold:regions[p.region],`stroke="${p.id<=13?P.gold:'#E5E0C6'}" stroke-width="${p.id<=13?2:1}" data-pin="${p.id}"`));put(text(p.x,p.y+(p.id<=13?5:4),p.id,p.id<=13?(alternate?19:17):(final||continued?14:13),{weight:800,fill:p.id<=13&&alternate?P.ocean:'#FFF',anchor:'middle'}));});
 put(rect(44,1811,511,33,'#173B4A'));put(text(55,1834,'8  ISS ORBIT   ·   17  GLOBAL SHIPPING',20,{weight:700,fill:'#F2D89D'}));
 put(text(32,1884,'Pins are displaced for clarity; leaders mark anchors.',18,{fill:P.muted}));
 put(text(32,1909,'Borders simplified. 1–13 features; 14–44 briefs.',18,{fill:P.muted}));
 
-const briefs=stories.slice(13),cw=466,briefY=1464-lift,rowH=final?50.5:alternate?49:44;
-const columns=[briefs.slice(0,11),briefs.slice(11,21),briefs.slice(21)];
+const briefs=stories.slice(13),cw=466,briefY=1464-lift,rowH=readable?51:final?50.5:alternate?49:44;
+// Compact display paraphrases retain the complete reporting in the source ledger.
+const briefCopy={
+ 14:'77th anniversary of its adoption.',
+ 15:'Tributes 18 years after the attacks.',
+ 16:'Gukesh–Sindarov, Geneva.',
+ 17:'UN: conflict and climate disrupt trade.',
+ 18:'UN bolsters civilian protection in Ituri.',
+ 19:'Nairobi meeting, Nov 26–27.',
+ 20:'Samarkand women’s centre profiled.',
+ 21:'Ends its BRICS-bank application.',
+ 22:'Asks Asian partners to curb tariff evasion.',
+ 23:'Groups seek audit of fuel incentives.',
+ 24:'Brazilian source: no inauguration invite.',
+ 25:'Final count due Friday.',
+ 26:'Jocelyn Turnbull wins Kidson Medal.',
+ 27:'Court backs trial; he denies rape.',
+ 28:'Woman tried on Russia spying charge.',
+ 29:'First winter walkout disrupts travel.',
+ 30:'Speaker announces Dec 27 election.',
+ 31:'Tech, banks rise; tariff fears ease.',
+ 32:'Ghana, Uganda, Zambia seen lower.',
+ 33:'Final LNG-law vote delayed to February.',
+ 34:'Hong Ihk-pyo: realism on North Korea.',
+ 35:'Beijing rejects South China Sea stance.',
+ 36:'ASEAN+3 seeks cross-border pay links.',
+ 37:'Diplomats back Hernández de Cos.',
+ 38:'FT: halt to 4 SE Asian nations.',
+ 39:'Tokyo: free journalist held in Russia.',
+ 40:'Houthi spokesman: four dead in Taiz.',
+ 41:'Ministry: attack kills a Nepalese worker.',
+ 42:'UKMTO: crew safe west of Dubai.',
+ 43:'AFP: aid cuts fuel armed-group recruitment.',
+ 44:'Beats India A by 8 wickets in Doha.'
+};
+const groups=[['Asia','World'],['Europe','Americas'],['Africa','Oceania','Middle East']];
+const columnLabels=['ASIA + GLOBAL','EUROPE + AMERICAS','AFRICA + OCEANIA + MIDDLE EAST'];
+const columns=upgrade?groups.map(group=>group.flatMap(region=>briefs.filter(s=>s.region===region))):[briefs.slice(0,11),briefs.slice(11,21),briefs.slice(21)];
 columns.forEach((col,c)=>{
  const x=590+c*480;
+ put(`<g data-brief-column="${c}">`);
+ if(upgrade)put(text(x,1436-lift,`${columnLabels[c]} · ${col.length}`,c===2?21:22.5,{weight:800,box:[x,1411-lift,cw,31],id:`brief-column-${c}`}));
  if(c)put(line(x-13,1455-lift,x-13,1912,P.rule,1.5));
  col.forEach((s,i)=>{
   const y=briefY+i*rowH;
+  put(`<g data-brief="${s.id}" data-region="${escape(s.region)}">`);
   put(rect(x,y-18,29,25,regions[s.region]));put(text(x+14.5,y+1,s.id,17,{fill:'#FFF',weight:800,anchor:'middle'}));
   const caution=s.status==='CLAIM'?' [CLAIM]':s.status==='FORECAST'?' [FORECAST]':'';
-  put(text(x+38,y,s.headline,alternate?22.5:21,{weight:700,box:[x+38,y-25,cw-43,31],id:`brief-head-${s.id}`}));
-  put(text(x+38,y+(alternate?24:21),`${s.detail}${caution} — ${s.outlet}`,alternate?19:17,{weight:final?600:400,box:[x+38,y+(alternate?6:4),cw-43,27],id:`brief-body-${s.id}`}));
+  const statusWidth=copyfit&&caution?24+s.status.length*8.5:0;
+  put(text(x+38,y,s.headline,alternate?22.5:21,{weight:700,box:[x+38,y-25,cw-43-(statusWidth?statusWidth+12:0),31],id:`brief-head-${s.id}`}));
+  if(statusWidth){
+   put(rect(x+cw-statusWidth,y-20,statusWidth,24,states[s.status],`data-brief-status="${s.id}"`));
+   put(text(x+cw-statusWidth/2,y-2,s.status,16,{weight:800,fill:'#FFF',anchor:'middle',id:`brief-status-${s.id}`}));
+  }
+  put(text(x+38,y+(alternate?24:21),`${copyfit?briefCopy[s.id]:s.detail}${copyfit?'':caution} — ${s.outlet}`,copyfit?21.5:readable?20:alternate?19:17,{weight:final||continued?600:400,box:[x+38,y+(copyfit?0:continued?4:alternate?6:4),cw-43,33],id:`brief-body-${s.id}`}));
+  put('</g>');
  });
+ put('</g>');
 });
 put(rect(32,1930,1984,62,'#ECE6D8',`stroke="${P.rule}" stroke-width="2"`));
 put(text(45,1955,'DATE CHECK',23,{weight:800,fill:P.maroon}));
@@ -258,7 +317,7 @@ let errors=[];page.on('pageerror',e=>errors.push(e.message));page.on('console',m
 await page.setContent(source);
 await page.evaluate(()=>document.fonts.ready);
 // Fit only within assigned text zones; preserve the intentionally larger hierarchy.
-const fitted=await page.evaluate((final)=>{
+const fitted=await page.evaluate(({final,scenic})=>{
  const fitted=[];
  for(const t of document.querySelectorAll('text[data-bounds]')){
   const [x,y,w,h]=t.dataset.bounds.split(',').map(Number);const original=Number(t.getAttribute('font-size'));
@@ -266,13 +325,21 @@ const fitted=await page.evaluate((final)=>{
   while(box.x+box.width>x+w-.5&&size>Math.max(16,original*.76)){size-=.25;t.setAttribute('font-size',String(size));box=t.getBBox();}
   if(size!==original)fitted.push({id:t.id,text:t.textContent,from:original,to:size});
  }
-  if(final)for(const backdrop of document.querySelectorAll('[data-stamp-backdrop]')){
+   if(final)for(const backdrop of document.querySelectorAll('[data-stamp-backdrop]')){
    const stamp=document.getElementById(backdrop.dataset.stampBackdrop),b=stamp.getBBox();
    backdrop.setAttribute('x',String(b.x-8));backdrop.setAttribute('y',String(b.y-4));
-   backdrop.setAttribute('width',String(b.width+16));backdrop.setAttribute('height',String(b.height+8));
-  }
+    backdrop.setAttribute('width',String(b.width+16));backdrop.setAttribute('height',String(b.height+8));
+   }
+   if(scenic)for(const backdrop of document.querySelectorAll('[data-stamp-backdrop]')){
+    const id=backdrop.dataset.stampBackdrop,stamp=document.getElementById(id),b=stamp.getBBox();
+    const related=[...document.querySelectorAll(`[data-related-stamp="${id}"]`)].map(t=>t.getBBox());
+    const left=Math.min(b.x,...related.map(r=>r.x)),right=Math.max(b.x+b.width,...related.map(r=>r.x+r.width));
+    const originalWidth=Number(backdrop.getAttribute('width'));
+    backdrop.setAttribute('x',String(left-8));backdrop.setAttribute('width',String(Math.min(originalWidth,right-left+16)));
+    backdrop.setAttribute('opacity','.97');
+   }
   return fitted;
-},final);
+},{final,scenic});
 const rendered=await page.locator('svg').first().evaluate(el=>el.outerHTML);
 fs.writeFileSync(path.join(root,'artwork.svg'),rendered);
 const geometry=await page.evaluate(()=>{
@@ -289,7 +356,8 @@ const geometry=await page.evaluate(()=>{
   if(Math.min(ra.right,rb.right)-Math.max(ra.left,rb.left)>1&&Math.min(ra.bottom,rb.bottom)-Math.max(ra.top,rb.top)>1)failures.push({kind:'story-overlap',a:a.textContent,b:b.textContent});
  }
  const briefSizes=Array.from(document.querySelectorAll('[id^="brief-body-"]')).map(t=>Number(t.getAttribute('font-size')));
- return{checkedTextNodes:all.length,failures,briefBodyFontMin:Math.min(...briefSizes),briefBodyFontMean:briefSizes.reduce((a,b)=>a+b,0)/briefSizes.length};
+  const sceneOcclusion=[...document.querySelectorAll('[data-story]')].map(g=>{const scene=g.querySelector('svg'),backdrop=g.querySelector('[data-stamp-backdrop]');return{id:Number(g.dataset.story),ratio:backdrop?Number(backdrop.getAttribute('width'))*Number(backdrop.getAttribute('height'))/(Number(scene.getAttribute('width'))*Number(scene.getAttribute('height'))):0};});
+  return{checkedTextNodes:all.length,failures,briefBodyFontMin:Math.min(...briefSizes),briefBodyFontMean:briefSizes.reduce((a,b)=>a+b,0)/briefSizes.length,sceneOcclusion};
 });
 const master=path.join(root,'.makefun-kit',`${pass}-master.png`);
 await page.screenshot({path:master});

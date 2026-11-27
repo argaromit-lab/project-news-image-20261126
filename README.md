@@ -31,10 +31,10 @@ The image is rendered at 2048 square in Chromium, downsampled with Lanczos3 to
 provide the typography. Rendering is a development task; the sandbox only
 copies the already-rendered image.
 
-The reviewed artwork is the H3 candidate. To rebuild it, provide a separate
+The reviewed artwork is the R3 candidate. To rebuild it, provide a separate
 development package containing `playwright` and `sharp`, set
 `ATLAS_RENDER_PACKAGES` to that package's `package.json`, and set
-`ATLAS_CHROME_PATH` to a Chromium executable. Run `node tools/render.mjs H3`.
+`ATLAS_CHROME_PATH` to a Chromium executable. Run `node tools/render.mjs R3`.
 Use the same installed fonts for matching typography. Alternative rendering
 passes remain available for comparison; the runtime always copies `entry.png`.
 
@@ -43,6 +43,11 @@ field and geographic anchor. Sources that expose only a publication date retain
 day precision; no publication clock is invented. Global shipping and the ISS
 are not assigned false terrestrial coordinates. Map leaders connect displaced
 number labels to approximate city or regional anchors; borders are simplified.
+
+The lower briefs are grouped by region. Their compact display labels paraphrase
+the complete ledger, retain the credited outlet, and mark forecasts and claims
+with explicit tags. Dark map-pin outlines and framed feature status labels
+separate the numbered locations and attribution from their backgrounds.
 
 The date-check strip distinguishes the 25 November parade announcement from
 Thanksgiving's interrupted parade day, and the 25 November Cairo crash from
@@ -54,7 +59,7 @@ Officials' statements and unverified allegations are attributed explicitly.
 ESNZ in the image means Earth Sciences New Zealand. To regenerate the vector
 master, install `playwright` and `sharp` in an external development directory,
 set `ATLAS_RENDER_PACKAGES` to that directory's `package.json`, and set
-`ATLAS_CHROME_PATH` to its Chromium executable. Run `node tools/render.mjs H3`.
+`ATLAS_CHROME_PATH` to its Chromium executable. Run `node tools/render.mjs R3`.
 This development renderer is separate from the dependency-free sandbox entry.
 
 ## License
