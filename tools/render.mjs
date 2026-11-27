@@ -6,10 +6,13 @@ const require=createRequire(process.env.ATLAS_RENDER_PACKAGES??'G:/kits/news-ima
 const {chromium}=require('playwright');
 const sharp=require('sharp');
 const root=path.resolve(import.meta.dirname,'..');
-const pass=process.argv[2]??'R3';
-const continued=/^R[1-3]$/.test(pass);
-const copyfit=pass==='R2'||pass==='R3';
-const clarified=pass==='R3';
+const pass=process.argv[2]??'N1';
+const illustrated=/^N[1-3]$/.test(pass);
+const expanded=pass==='N2';
+const insetMap=pass==='N3';
+const continued=/^R[1-3]$/.test(pass)||illustrated;
+const copyfit=pass==='R2'||pass==='R3'||illustrated;
+const clarified=pass==='R3'||illustrated;
 const upgrade=/^U[1-4]$/.test(pass)||continued;
 const readable=/^U[2-4]$/.test(pass)||continued;
 const scenic=/^U[3-4]$/.test(pass)||continued;
@@ -18,6 +21,9 @@ const final=pass==='H4';
 const hybrid=pass==='H3'||final||upgrade;
 const alternate=pass==='H2'||hybrid;
 const lift=final||readable?80:alternate?60:0;
+const headerGain=expanded?14:0;
+const leadArtGain=expanded?34:0;
+const lowerShift=leadArtGain-headerGain;
 const P={paper:'#F7F3EB',ink:'#161616',rule:'#C8C0B0',navy:'#0E1E32',maroon:'#5C161B',emerald:'#0B3B2E',gold:'#FFD54F',muted:'#5D5A51',ocean:'#0B1F33',land:'#4B8B6B'};
 const regions={Asia:'#0D655B',Europe:'#244F78','Middle East':'#8E332A',Americas:'#966018',Africa:'#645C28',Oceania:'#754362',World:'#4C5766'};
 const states={OFFICIAL:'#145A32',OFFICIALS:'#0E6251',REPORTED:'#922B21',FORECAST:'#1B4F72',CLAIM:'#784212'};
@@ -40,7 +46,45 @@ function words(value,limit){
 const circle=(x,y,r,fill,more='')=>`<circle cx="${x}" cy="${y}" r="${r}" fill="${fill}" ${more}/>`;
 const poly=(points,fill,more='')=>`<polygon points="${points}" fill="${fill}" ${more}/>`;
 const windows=(x,y,cols,rows,dx=30,dy=28,color='#FFD54F')=>Array.from({length:cols*rows},(_,i)=>rect(x+i%cols*dx,y+Math.floor(i/cols)*dy,10,12,color,`opacity="${.35+(i%3)*.2}"`)).join('');
+function narrativeArt(name){
+ const a=[],add=s=>a.push(s);
+ if(name==='storm'){
+  add(rect(0,0,600,240,'url(#blue)'));
+  add(`<path d="M0 157V59H38V32H68V93H95V47H132V76H169V39H195V158Z M433 158V81H458V44H489V70H517V29H544V94H573V62H600V170Z" fill="#244752"/>`);
+  add(windows(13,77,6,3,28,24,'#F2CA78'));add(windows(448,91,5,2,28,24,'#F2CA78'));
+  add(`<path d="M0 179L206 155H410L600 188V240H0Z" fill="#34535D"/><path d="M308 160L269 240M335 160L392 240" stroke="#A9C2C0" stroke-width="3" stroke-dasharray="12 13"/>`);
+  add(`<g data-narrative="turkey-balloon"><path d="M278 103C192 106 167 58 182 26C199 3 228 19 240 56C219 7 242-5 260 10C276 22 278 39 279 60C286 12 307 6 320 23C333 42 314 70 299 91C333 53 356 65 353 88C350 111 316 127 288 129Z" fill="#C97843" stroke="#FFE0A1" stroke-width="3"/>`);
+  add(`<path d="M194 27L265 108M252 10L277 108M319 25L287 110M350 87L296 117" stroke="#FFD58A" stroke-width="5"/><ellipse cx="294" cy="109" rx="58" ry="55" fill="#E8B36E" stroke="#FFE6AC" stroke-width="3"/><path d="M256 119Q272 153 315 147Q338 143 347 120Q318 137 300 115Z" fill="#B77949"/>`);
+  add(`<path d="M316 101C302 86 310 63 327 56C331 30 357 22 374 36C395 54 382 77 366 85L359 128Z" fill="#EDC083" stroke="#FFE6AC" stroke-width="3"/><path d="M378 49L404 61 379 71Z" fill="#F2A449" stroke="#FFE6AC" stroke-width="2"/><circle cx="365" cy="47" r="5.5" fill="#15343F"/><circle cx="367" cy="45" r="1.5" fill="#FFF3D1"/><path d="M381 69Q390 91 376 95Q364 87 373 77" fill="#D55248"/><path d="M273 160L262 177M306 162L314 179" stroke="#E8B36E" stroke-width="7"/>`);
+  add(`<path d="M254 149L217 212M298 164L283 217M344 131L367 213" stroke="#F1DCB2" stroke-width="2.5"/><path d="M220 205V223M283 209V227M369 207V226" stroke="#E1C89B" stroke-width="7"/></g>`);
+  add(`<path d="M428 52Q468 18 513 52L531 83 511 71 490 90 471 72 450 91Z" fill="#DD6151" stroke="#F1A079" stroke-width="2"/><path d="M477 41L490 124Q497 142 507 126" stroke="#F5D4A1" stroke-width="4" fill="none"/>`);
+  for(let i=0;i<22;i++){const x=(i*83)%620,y=(i*47)%175;add(line(x,y,x-15,y+19,'#B6D5DB',2,'opacity=".48"'));}
+  add(`<path d="M365 184H563V201H365Z" fill="#E6BA64" stroke="#12313E" stroke-width="3"/><path d="M378 185L393 200M408 185L423 200M438 185L453 200M468 185L483 200M498 185L513 200M528 185L543 200" stroke="#6E3531" stroke-width="9"/>`);
+ }else if(name==='summit'){
+  add(rect(0,0,600,240,'url(#green)'));
+  add(`<path d="M0 147V25L172 9 358 37V154Z" fill="#28584F"/><path d="M21 37L169 23 336 47M21 65L169 51 336 75M21 93L169 79 336 103" stroke="#6C9C80" stroke-width="7" opacity=".65"/>`);
+  add(rect(393,20,150,87,'#15457E','stroke="#D9C68F" stroke-width="3"'));
+  for(let i=0;i<12;i++){const t=i*Math.PI/6;add(circle(468+30*Math.cos(t),63+29*Math.sin(t),4,P.gold));}
+  add(line(566,15,566,145,'#E2C98F',4));add(rect(568,20,32,31,'#429BE0'));add(rect(568,51,32,31,P.gold));
+  add(`<path d="M16 179L145 119H475L593 178 506 229H105Z" fill="#B99156" stroke="#E5C98C" stroke-width="3"/><path d="M16 179H593L506 229H105Z" fill="#82633F"/><path d="M300 122L287 146 310 162 295 181" stroke="#173F3A" stroke-width="7" fill="none"/>`);
+  for(const [x,skin,hair,coat] of [[114,'#D0AB82','#50423A','#183B41'],[196,'#C99572','#3A3634','#384D59'],[401,'#DFB08B','#736651','#20414D'],[480,'#BE916F','#D9CCAD','#294249']]){
+   add(`<path d="M${x-22} 125Q${x} 101 ${x+24} 124L${x+32} 153H${x-30}Z" fill="${coat}" stroke="#65877A" stroke-width="2"/><ellipse cx="${x}" cy="94" rx="16" ry="21" fill="${skin}"/><path d="M${x-16} 89Q${x-17} 65 ${x+8} 72L${x+16} 83V91Q${x} 79 ${x-16} 89Z" fill="${hair}"/><path d="M${x-8} 116L${x} 131 ${x+9} 115" fill="#E9DFBA"/>`);
+  }
+  add(`<path d="M208 126L257 143 247 153 195 141M405 128L359 146 367 157 421 141" fill="#CDA57F" stroke="#E4C49C" stroke-width="2"/><path d="M213 135L258 129 287 148 240 160Z" fill="#F7E9C5" stroke="#E0C68C" stroke-width="2"/><path d="M326 136L369 130 392 149 345 161Z" fill="#BDD5C1" stroke="#E0C68C" stroke-width="2"/><path d="M234 139L261 137M242 148L272 144M345 139L367 137M352 148L380 145" stroke="#5C7662" stroke-width="3"/>`);
+ }else if(name==='radar'){
+  add(rect(0,0,600,240,'url(#blue)'));
+  add(`<path d="M0 185V137H46V110H67V151H105V124H135V185H194V106H222V149H258V121H286V177H389V133H431V100H465V171H507V123H544V152H600V240H0Z" fill="#264651"/><path d="M433 142V59L440 31 447 59V142M420 84H460M434 20V33" fill="none" stroke="#88B5B3" stroke-width="3"/>`);
+  add(`<g data-narrative="falling-debris"><path d="M283 30L317 40 351 29 336 52 316 48 298 59Z" fill="#E7E8D4" stroke="#A6C3BF" stroke-width="2"/><path d="M315 17L320 61" stroke="#E7E8D4" stroke-width="6"/><path d="M334 67L351 62 344 78Z M366 91L382 85 376 103Z M398 116L417 111 409 131Z" fill="#F4D49B"/><path d="M341 61L329 48M372 84L358 69M406 109L391 94" stroke="#F0B26C" stroke-width="3" stroke-dasharray="5 4"/></g>`);
+  add(`<path d="M37 154V83H168V154Z" fill="#295B61" stroke="#93BEB1" stroke-width="3"/>`);
+  for(let i=0;i<4;i++)add(circle(103,117,11+i*10,'none','stroke="#61C7AB" stroke-width="2"'));
+  add(`<path d="M103 117L128 91" stroke="#FFE6A3" stroke-width="4"/><path d="M66 158L50 197H157L139 158" fill="#497B7C"/><path d="M168 105L253 61" stroke="#65D8BC" stroke-width="2" stroke-dasharray="5 6"/>`);
+  add(`<path d="M478 77L529 164H427Z" fill="#E7BE5D" stroke="#FFEBB3" stroke-width="3"/><path d="M478 104V133M478 143V149" stroke="#553F2C" stroke-width="7"/>`);
+  add(`<path d="M318 183H563V197H318Z" fill="#A35D42"/><path d="M332 184L345 197M362 184L375 197M392 184L405 197M422 184L435 197M452 184L465 197M482 184L495 197M512 184L525 197" stroke="#E8BC73" stroke-width="6"/>`);
+ }else return null;
+ return `<g data-original-scene="${name}">${a.join('')}</g>`;
+}
 function art(name){
+ if(illustrated){const narrative=narrativeArt(name);if(narrative)return narrative;}
  let a=[];const add=s=>a.push(s);
  add(rect(0,0,600,240,'url(#'+(['summit','space','justice','memorial','pipeline'].includes(name)?'green':(['storm','servers','radar'].includes(name)?'blue':'red'))+')'));
  add(`<path d="M0 210 Q140 150 300 204 T600 193 V240 H0Z" fill="#000" opacity=".14"/>`);
@@ -160,24 +204,24 @@ put(`<svg xmlns="http://www.w3.org/2000/svg" width="2048" height="2048" viewBox=
 <linearGradient id="red" x2=".6" y2="1"><stop stop-color="#8A4233"/><stop offset="1" stop-color="#5C161B"/></linearGradient>
 <linearGradient id="shade" x1="0" y1="0" x2="0" y2="1"><stop offset=".35" stop-color="#000" stop-opacity="0"/><stop offset="1" stop-color="#000" stop-opacity=".75"/></linearGradient>
 </defs>${rect(0,0,2048,2048,P.paper)}`);
-put(text(32,49,'THE DAILY ATLAS',29,{weight:800}));
-put(text(2016,49,'44 STORIES   /   13 PICTURES   /   7 REGIONS',23,{weight:700,anchor:'end'}));
-put(line(32,66,2016,66,P.ink,5));
-put(text(32,165,'Thursday 26 November 2026',100,{serif:true,weight:700,box:[32,70,1984,120],id:'date'}));
-put(text(32,215,'EUROPE BARGAINS. GULF TENSIONS RISE. A STORM STILLS THANKSGIVING.',28,{weight:700,fill:P.maroon,box:[32,187,1984,35]}));
+put(text(32,expanded?38:49,'THE DAILY ATLAS',expanded?27:29,{weight:800}));
+put(text(2016,expanded?38:49,'44 STORIES   /   13 PICTURES   /   7 REGIONS',23,{weight:700,anchor:'end'}));
+put(line(32,66-(expanded?12:0),2016,66-(expanded?12:0),P.ink,5));
+put(text(32,165-headerGain,'Thursday 26 November 2026',100,{serif:true,weight:700,box:[32,70-headerGain,1984,120],id:'date'}));
+put(text(32,215-headerGain,'EUROPE BARGAINS. GULF TENSIONS RISE. A STORM STILLS THANKSGIVING.',28,{weight:700,fill:P.maroon,box:[32,187-headerGain,1984,35]}));
 const metrics=[['€45BN','proposed Kyiv loan'],['2 ITALIANS','killed, Kuwait says'],['9 INJURED','Bangkok refinery fire'],['+12.2%','Australian Q3 capex'],['3 TONS','ISS supplies arrive'],['168','Hong Kong remembers']];
 if(!alternate)metrics.forEach((m,i)=>{let x=32+i*330.666;put(line(x,235,x,291));put(text(x+15,260,m[0],32,{serif:true,weight:700,fill:i%2?P.emerald:P.maroon}));put(text(x+15,286,m[1],20,{fill:P.muted}));});
 const regionW=1984/7;
-Object.entries(regions).forEach(([region,color],i)=>{let x=32+i*regionW;let count=stories.filter(s=>s.region===region).length;put(rect(x,305-lift,regionW-2,32,color));put(text(x+regionW/2,328-lift,`${region.toUpperCase()} ${count}`,19,{fill:'#FFF',weight:700,anchor:'middle'}));});
-put(rect(32,348-lift,1984,deep?58:49,P.navy));put(rect(32,348-lift,210,deep?58:49,P.maroon));put(text(46,(deep?383:379)-lift,'THE DAY IN UTC',23,{fill:'#FFF',weight:800}));
-timeline.forEach(([time,label],i)=>{const slot=1742/timeline.length,x=258+i*slot;put(text(x,(deep?372:369)-lift,time,deep?23:21,{fill:P.gold,weight:800}));put(text(x,(deep?397:388)-lift,label,deep?19:16,{fill:'#FFF',box:[x,(deep?377:371)-lift,slot-12,deep?26:22]}));});
+Object.entries(regions).forEach(([region,color],i)=>{let x=32+i*regionW;let count=stories.filter(s=>s.region===region).length;put(rect(x,305-lift-headerGain,regionW-2,32,color));put(text(x+regionW/2,328-lift-headerGain,`${region.toUpperCase()} ${count}`,19,{fill:'#FFF',weight:700,anchor:'middle'}));});
+put(rect(32,348-lift-headerGain,1984,deep?58:49,P.navy));put(rect(32,348-lift-headerGain,210,deep?58:49,P.maroon));put(text(46,(deep?383:379)-lift-headerGain,'THE DAY IN UTC',23,{fill:'#FFF',weight:800}));
+timeline.forEach(([time,label],i)=>{const slot=1742/timeline.length,x=258+i*slot;put(text(x,(deep?372:369)-lift-headerGain,time,deep?23:21,{fill:P.gold,weight:800}));put(text(x,(deep?397:388)-lift-headerGain,label,deep?19:16,{fill:'#FFF',box:[x,(deep?377:371)-lift-headerGain,slot-12,deep?26:22]}));});
 
 const cards=[];
 for(let i=0;i<13;i++){
  const lead=i<3,row=lead?0:(i<8?1:2),col=lead?i:(i-3)%5;
  const w=lead?(1984-36)/3:(1984-64)/5;
  const x=32+col*(w+(lead?18:16));
- const y=(lead?416:(row===1?818:1116))-lift,h=lead?390:286,ah=lead?164:116;
+ const y=(lead?416-headerGain:(row===1?818:1116)+lowerShift)-lift,h=lead?390+leadArtGain:286,ah=lead?164+leadArtGain:116;
  const s=stories[i]; cards.push({id:s.id,x,y,w,h,artHeight:ah});
  put(`<g data-story="${s.id}">${rect(x,y,w,h,'#FBF8F0',`stroke="${P.rule}" stroke-width="1.5"`)}`);
  put(`<svg x="${x}" y="${y}" width="${w}" height="${ah}" viewBox="0 0 600 240" preserveAspectRatio="none">${art(s.scene)}</svg>`);
@@ -199,15 +243,15 @@ for(let i=0;i<13;i++){
  put('</g>');
 }
 
-put(line(32,1411-lift,2016,1411-lift,P.ink,3));
-put(text(32,1436-lift,'WHERE IT HAPPENED',24,{weight:800}));
+put(line(32,1411-lift+lowerShift,2016,1411-lift+lowerShift,P.ink,3));
+put(text(32,1436-lift+lowerShift,'WHERE IT HAPPENED',24,{weight:800}));
 if(!upgrade){put(text(590,1436-lift,'31 MORE REPORTS FROM THURSDAY',24,{weight:800}));
 put(text(2016,1440-lift,'Numbers connect every story to the map',18,{fill:P.muted,anchor:'end'}));}
 
 // Original simplified geographic outlines; anchors use actual geographic positions.
-const map={x:32,y:1455-lift,w:535,h:402+lift};
+const map={x:32,y:1455-lift+lowerShift,w:535,h:402+lift-lowerShift};
 put(rect(map.x,map.y,map.w,map.h,P.ocean));
-const plot={x:45,y:1480-lift,w:509,h:315+lift};
+const plot={x:45,y:1480-lift+lowerShift,w:509,h:insetMap?250:315+lift-lowerShift};
 const project=(lon,lat)=>[plot.x+(lon+180)/360*plot.w,plot.y+(83-lat)/147*plot.h];
 for(let lat=-40;lat<=80;lat+=40){let y=project(0,lat)[1];put(line(plot.x,y,plot.x+plot.w,y,'#325467',1,'opacity=".5"'));}
 for(let lon=-120;lon<=120;lon+=60){let x=project(lon,0)[0];put(line(x,plot.y,x,plot.y+plot.h,'#325467',1,'opacity=".5"'));}
@@ -224,25 +268,49 @@ const land=[
 [[96,5],[107,-6],[116,-8],[122,-7],[131,-4],[137,-5],[131,-9],[115,-11],[104,-8]]
 ];
 land.forEach(shape=>put(poly(shape.map(([lon,lat])=>project(lon,lat).join(',')).join(' '),P.land,`stroke="#8DB299" stroke-width="1.4" stroke-linejoin="round"`)));
-const pins=stories.filter(s=>s.lat!==null).map(s=>{let [ax,ay]=project(s.lon,s.lat);return{id:s.id,region:s.region,ax,ay,x:ax+(s.id%3-1)*9,y:ay+(s.id%4-1.5)*9,r:s.id<=13?(alternate?16:13):(final||continued?11:10)};});
+const areas={world:plot};
+const detailSets={europe:new Set([16,27,28,29,30,31,37]),asia:new Set([14,15,20,34,35,36,38,39,44])};
+if(insetMap){
+ for(const [index,key] of ['europe','asia'].entries()){
+  const x=44+index*262,y=1666,w=249,h=133;
+  const area={x:x+10,y:y+33,w:w-20,h:96,lonMin:index?45:-12,lonMax:index?150:35,latMin:index?-5:38,latMax:index?50:60};
+  area.project=(lon,lat)=>[area.x+(lon-area.lonMin)/(area.lonMax-area.lonMin)*area.w,area.y+(area.latMax-lat)/(area.latMax-area.latMin)*area.h];
+  areas[key]=area;
+  put(`<g data-map-detail="${key}">${rect(x,y,w,h,'#102D3B',`stroke="#88A296" stroke-width="1.4"`)}`);
+  put(`<defs><clipPath id="detail-${key}"><rect x="${area.x}" y="${area.y}" width="${area.w}" height="${area.h}"/></clipPath></defs><g clip-path="url(#detail-${key})">`);
+  land.forEach(shape=>put(poly(shape.map(([lon,lat])=>area.project(lon,lat).join(',')).join(' '),'#376D57','stroke="#82A78A" stroke-width="1.2"')));
+  put('</g>');
+  put(text(x+10,y+22,`${key.toUpperCase()} DETAIL · ${detailSets[key].size}`,18,{weight:800,fill:'#F5E7BF',id:`map-detail-title-${key}`}));
+  put('</g>');
+  const [left,top]=project(area.lonMin,area.latMax),[right,bottom]=project(area.lonMax,area.latMin);
+  put(rect(left,top,right-left,bottom-top,'none','stroke="#F0D69B" stroke-width="1.5" stroke-dasharray="4 4"'));
+ }
+}
+const pins=stories.filter(s=>s.lat!==null).map(s=>{
+ const area=insetMap&&detailSets.europe.has(s.id)?'europe':insetMap&&detailSets.asia.has(s.id)?'asia':'world';
+ const [ax,ay]=area==='world'?project(s.lon,s.lat):areas[area].project(s.lon,s.lat);
+ return{id:s.id,region:s.region,area,ax,ay,x:ax+(s.id%3-1)*9,y:ay+(s.id%4-1.5)*9,r:s.id<=13?(alternate?16:13):area!=='world'?12:(final||continued?11:10)};
+});
 for(let k=0;k<240;k++){
  for(let i=0;i<pins.length;i++){
   const p=pins[i];
   p.x+=(p.ax-p.x)*(alternate?.012:.018);p.y+=(p.ay-p.y)*(alternate?.012:.018);
   for(let j=i+1;j<pins.length;j++){
-   const q=pins[j],dx=q.x-p.x,dy=q.y-p.y,d=Math.hypot(dx,dy)||.1,min=p.r+q.r+(clarified?9:alternate?5:3);
+   const q=pins[j];if(p.area!==q.area)continue;
+   const dx=q.x-p.x,dy=q.y-p.y,d=Math.hypot(dx,dy)||.1,min=p.r+q.r+(clarified?9:alternate?5:3);
    if(d<min){const v=(min-d)*.52;const ux=d===.1?.7:dx/d,uy=d===.1?.7:dy/d;p.x-=ux*v;p.y-=uy*v;q.x+=ux*v;q.y+=uy*v;}
   }
-  p.x=Math.max(plot.x+15,Math.min(plot.x+plot.w-15,p.x));p.y=Math.max(plot.y+15,Math.min(plot.y+plot.h-15,p.y));
+   const area=areas[p.area],edge=p.area==='world'?15:p.r+6;
+   p.x=Math.max(area.x+edge,Math.min(area.x+area.w-edge,p.x));p.y=Math.max(area.y+edge,Math.min(area.y+area.h-edge,p.y));
  }
 }
 pins.forEach(p=>put(line(p.ax,p.ay,p.x,p.y,'#ACC4B5',1.2,'opacity=".8"')));
-pins.forEach(p=>{put(circle(p.ax,p.ay,2,'#EBD4A5'));if(clarified)put(circle(p.x,p.y,p.r+2.5,P.ocean));put(circle(p.x,p.y,p.r,p.id<=13&&alternate?P.gold:regions[p.region],`stroke="${p.id<=13?P.gold:'#E5E0C6'}" stroke-width="${p.id<=13?2:1}" data-pin="${p.id}"`));put(text(p.x,p.y+(p.id<=13?5:4),p.id,p.id<=13?(alternate?19:17):(final||continued?14:13),{weight:800,fill:p.id<=13&&alternate?P.ocean:'#FFF',anchor:'middle'}));});
+pins.forEach(p=>{put(circle(p.ax,p.ay,2,'#EBD4A5'));if(clarified)put(circle(p.x,p.y,p.r+2.5,P.ocean));put(circle(p.x,p.y,p.r,p.id<=13&&alternate?P.gold:regions[p.region],`stroke="${p.id<=13?P.gold:'#E5E0C6'}" stroke-width="${p.id<=13?2:1}" data-pin="${p.id}" data-map-zone="${p.area}"`));put(text(p.x,p.y+(p.id<=13?5:4),p.id,p.id<=13?(alternate?19:17):p.area!=='world'?18:(final||continued?14:13),{weight:800,fill:p.id<=13&&alternate?P.ocean:'#FFF',anchor:'middle',id:`map-number-${p.id}`}));});
 put(rect(44,1811,511,33,'#173B4A'));put(text(55,1834,'8  ISS ORBIT   ·   17  GLOBAL SHIPPING',20,{weight:700,fill:'#F2D89D'}));
-put(text(32,1884,'Pins are displaced for clarity; leaders mark anchors.',18,{fill:P.muted}));
+put(text(32,1884,insetMap?'World + Europe / Asia details; leaders mark anchors.':'Pins are displaced for clarity; leaders mark anchors.',18,{fill:P.muted}));
 put(text(32,1909,'Borders simplified. 1–13 features; 14–44 briefs.',18,{fill:P.muted}));
 
-const briefs=stories.slice(13),cw=466,briefY=1464-lift,rowH=readable?51:final?50.5:alternate?49:44;
+const briefs=stories.slice(13),cw=466,briefY=1464-lift+lowerShift,rowH=expanded?49:readable?51:final?50.5:alternate?49:44;
 // Compact display paraphrases retain the complete reporting in the source ledger.
 const briefCopy={
  14:'77th anniversary of its adoption.',
@@ -283,8 +351,8 @@ const columns=upgrade?groups.map(group=>group.flatMap(region=>briefs.filter(s=>s
 columns.forEach((col,c)=>{
  const x=590+c*480;
  put(`<g data-brief-column="${c}">`);
- if(upgrade)put(text(x,1436-lift,`${columnLabels[c]} · ${col.length}`,c===2?21:22.5,{weight:800,box:[x,1411-lift,cw,31],id:`brief-column-${c}`}));
- if(c)put(line(x-13,1455-lift,x-13,1912,P.rule,1.5));
+ if(upgrade)put(text(x,1436-lift+lowerShift,`${columnLabels[c]} · ${col.length}`,c===2?21:22.5,{weight:800,box:[x,1411-lift+lowerShift,cw,31],id:`brief-column-${c}`}));
+ if(c)put(line(x-13,1455-lift+lowerShift,x-13,1912,P.rule,1.5));
  col.forEach((s,i)=>{
   const y=briefY+i*rowH;
   put(`<g data-brief="${s.id}" data-region="${escape(s.region)}">`);
@@ -314,7 +382,7 @@ fs.writeFileSync(path.join(root,'.makefun-kit','source-ledger.json'),JSON.string
 const browser=await chromium.launch({headless:true,executablePath:process.env.ATLAS_CHROME_PATH??path.join(process.env.LOCALAPPDATA,'ms-playwright','chromium-1194','chrome-win','chrome.exe')});
 const page=await browser.newPage({viewport:{width:2048,height:2048},deviceScaleFactor:1});
 let errors=[];page.on('pageerror',e=>errors.push(e.message));page.on('console',m=>{if(m.type()==='error')errors.push(m.text());});
-await page.setContent(source);
+await page.setContent((illustrated?'<style>html,body{margin:0;background:#F7F3EB}svg{display:block}</style>':'')+source);
 await page.evaluate(()=>document.fonts.ready);
 // Fit only within assigned text zones; preserve the intentionally larger hierarchy.
 const fitted=await page.evaluate(({final,scenic})=>{
