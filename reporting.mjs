@@ -1,0 +1,63 @@
+// SPDX-License-Identifier: MIT
+// Original editorial ledger. Date-only sources deliberately have no invented clock.
+export const day = '2026-11-26';
+const apGulf='https://wtop.com/national/2026/11/israeli-strikes-kill-8-in-gaza-and-other-mideast-news';
+const afp=(slug,id)=>`https://us.afpnews.com/article/?${slug},${id}`;
+const un=(id)=>`https://news.un.org/en/story/2026/11/${id}`;
+const r=(slug)=>`https://www.reuters.com/${slug}-2026-11-26`;
+const base=(region,place,lat,lon,field,status,outlet,url,headline,detail,extra={})=>({region,place,lat,lon,field,status,outlet,url,headline,detail,event_date:day,qualifying_date:day,date_precision:'day',...extra});
+export const stories = [
+base('Europe','Brussels',50.85,4.35,'Diplomacy','OFFICIAL','EU Council','https://www.consilium.europa.eu/en/meetings/european-council/2026/11/26-27/','EU budget fight|puts Kyiv aid at stake','Leaders debate 2028–34 spending|and funding Ukraine through 2027.',{scene:'summit',stamp:'€45BN PROPOSED',note:'Proposed additional loan, not approved funding.'}),
+base('Americas','New York',40.71,-74.01,'Weather','REPORTED','AP','https://www.khaosodenglish.com/news/international/2026/11/26/bad-weather-postpones-macys-thanksgiving-day-parade-for-first-time-ever/','A storm stills the|100th parade route','Thanksgiving passes without the march;|Wednesday’s decision moved it to Saturday.',{scene:'storm',stamp:'PARADE SATURDAY',note:'Today is the interrupted parade day; postponement announced Nov 25.'}),
+base('Middle East','Kuwait',29.37,47.98,'Security','OFFICIALS','AP',apGulf,'Kuwait reports two|Italians killed','Officials blame falling drone debris;|Iran denies carrying out the attack.',{scene:'radar',stamp:'2 ITALIANS',note:'Kuwaiti and Italian ministries confirm deaths; responsibility is disputed.'}),
+base('Middle East','Gaza',31.42,34.35,'Conflict','OFFICIALS','AP',apGulf,'Gaza hospitals|report 10 killed','Israeli strikes and gunfire;|a Hamas official is among the dead.',{scene:'gaza',stamp:'10 KILLED'}),
+base('Asia','Bangkok',13.69,100.58,'Disaster','OFFICIALS','AFP',afp('nine-hurt-in-huge-explosion-at-bangkok-oil-facility','D8NM6WE'),'Bangkok refinery|fire injures nine','A huge blast stops operations;|three are critically hurt.',{scene:'refinery',stamp:'9 INJURED'}),
+base('Africa','Cairo',30.04,31.24,'Justice','OFFICIALS','AFP',afp('egypt-prosecutors-announce-arrest-of-man-over-deadly-truck-disaster','D8P7263'),'Cairo fire inquiry:|driver arrested','Prosecutors announce an arrest|after Wednesday’s 31-death crash.',{scene:'road',stamp:'31-DEATH CRASH',note:'Crash was Nov 25; arrest and investigation update are Nov 26.'}),
+base('Oceania','Canberra',-35.28,149.13,'Economy','OFFICIAL','ABS','https://www.abs.gov.au/media-centre/media-releases/data-centre-investment-continues-drive-new-capital-expenditure','Australian capex|jumps 12.2%','Q3 investment data out today;|data centres drive the surge.',{scene:'servers',stamp:'+12.2% Q3',published_at:'2026-11-26T11:30:00+11:00'}),
+base('World','International Space Station',null,null,'Space','OFFICIAL','NASA','https://www.nasa.gov/blogs/spacestation/2026/11/26/progress-cargo-craft-docks-to-station-on-thanksgiving-day/','Progress 97 docks|with ISS supplies','About three tons arrive;|docking at 12:08 UTC.',{scene:'space',stamp:'3 TONS',published_at:'2026-11-26T07:19:00-05:00',event_at:'2026-11-26T12:08:00Z'}),
+base('Africa','Nairobi',-1.29,36.82,'Justice','REPORTED','Reuters',r('world/africa/kenya-government-breached-constitution-building-us-backed-ebola-quarantine-site'),'Kenya court halts|Ebola site works','US-backed facility breached|public-participation rules.',{scene:'court',stamp:'50-BED SITE'}),
+base('Asia','Naypyidaw',19.76,96.08,'Rights','OFFICIALS','AFP',afp('myanmar-wont-comply-with-inappropriate-parts-of-genocide-ruling-leader','D8N83ZQ'),'Myanmar leader|resists ICJ ruling','State media reports refusal|of parts deemed “inappropriate”.',{scene:'justice',stamp:'ICJ RULING',note:'Statement made Wednesday; state-media report Thursday.'}),
+base('Asia','Hong Kong',22.45,114.17,'Remembrance','REPORTED','AFP',afp('mourners-mark-hong-kong-fire-anniversary-authorities-warn-against-disorder','D8N23NR'),'Hong Kong mourns|a year after fire','Flowers mark the anniversary;|168 people died in 2025.',{scene:'memorial',stamp:'168 REMEMBERED',note:'Anniversary today, not a new 168-death fire.'}),
+base('Asia','Herat',34.35,62.20,'Energy','FORECAST','Reuters','https://www.khaama.com/turkmenistan-tapi-gas-pipeline-herat-afghanistan','TAPI’s Afghan link|nears completion','Officials see Herat gas flows|in early 2027, not yet today.',{scene:'pipeline',stamp:'153 KM LINK'}),
+base('Oceania','Flinders Island',-40.0,148.05,'Climate','OFFICIALS','AFP',afp('wildfires-raze-homes-displace-wildlife-on-australian-island','D8NB7CQ'),'Flinders Island|wildfires raze homes','More than 10% of the island|burned, emergency services say.',{scene:'wildfire',stamp:'OVER 10%'}),
+base('Asia','New Delhi',28.61,77.21,'Civic life','REPORTED','Indian Express','https://indianexpress.com/article/india/today-india-breaking-news-live-updates-26-november-2026-cjp-save-democracy-protest-nagpur-25-percent-us-tariffs-cairo-crash-us-tariffs-congress-constitution-day-pm-narendra-modi-10978950/','India’s Constitution Day','77th adoption anniversary.'),
+base('Asia','Mumbai',19.08,72.88,'Remembrance','REPORTED','PTI','https://www.thehindu.com/news/national/2008-mumbai-terror-attacks-anniversary-leaders-pay-tribute/article71745324.ece','Mumbai remembers 26/11','18 years after the attacks; tributes today.',{published_at:'2026-11-26T11:12:00+05:30',note:'Anniversary observed today; historical attack not new.'}),
+base('Europe','Geneva',46.22,6.14,'Sport','REPORTED','ESPN','https://www.espn.com/chess/story/_/id/50603195/gukesh-sindarov-live-fide-world-chess-championship-2026-game-3-latest-updates','World chess Game 3','Gukesh faces Sindarov in Geneva.',{event_at:'2026-11-26T14:00:00Z',note:'Game-day event; no unverified result asserted.'}),
+base('World','Global shipping',null,null,'Trade','OFFICIAL','UN News',un(1168884),'Sea trade loses momentum','UN says conflict and climate disruption weigh.'),
+base('Africa','Ituri',1.55,30.25,'Peacekeeping','OFFICIAL','UN News',un(1168883),'DR Congo protection','UN reinforces civilian protection in Ituri.'),
+base('Africa','Nairobi',-1.29,36.82,'Housing','OFFICIAL','UN News',un(1168873),'Global housing crisis','Nairobi hosts Nov 26–27 meeting.',{note:'Advance story Nov 25; meeting begins Nov 26.',published_date:'2026-11-25'}),
+base('Asia','Samarkand',39.65,66.96,'Women','OFFICIAL','UN News',un(1168878),'A refuge from violence','Samarkand women’s crisis centre profiled.'),
+base('Americas','Bogotá',4.71,-74.07,'Diplomacy','REPORTED','MercoPress','https://en.mercopress.com/2026/11/26/colombia-drops-its-bid-to-join-the-brics-bank-in-a-new-shift-towards-the-united-states','Colombia exits bank bid','Ends BRICS-bank application.',{published_at:'2026-11-26T04:42:00Z'}),
+base('Americas','Mexico City',19.43,-99.13,'Trade','REPORTED','Reuters',r('world/china/mexico-urges-asian-trade-partners-crack-down-tariff-dodging'),'Mexico urges tighter checks','Asks Asian partners to curb tariff evasion.'),
+base('Americas','Brasília',-15.79,-47.88,'Climate','REPORTED','AFP',afp('brazil-groups-seek-audit-of-fuel-subsidies-over-climate-costs','D8LH9ZQ'),'Brazil fuel subsidy audit','Groups seek audit of fuel incentives.'),
+base('Americas','Brasília',-15.79,-47.88,'Diplomacy','OFFICIALS','AFP',afp('argentinas-milei-not-invited-to-lula-inauguration-amid-tensions','D8QW8WF'),'Milei off Lula guest list','Brazilian source confirms no inauguration invite.',{note:'Thursday confirmation, not an invented new recall.'}),
+base('Oceania','Wellington',-41.29,174.78,'Politics','FORECAST','AFP',afp('new-zealand-heads-for-weeks-of-wrangling-with-final-election-results-due','D8R379F'),'New Zealand count awaited','Final count due Friday.',{note:'Final result due Nov 27; not declared today.'}),
+base('Oceania','Wellington',-41.29,174.78,'Science','OFFICIAL','ESNZ','https://www.earthsciences.nz/news/jocelyn-turnbulls-global-climate-leadership-recognised-with-prestigious-kidson-medal','Climate scientist honoured','Jocelyn Turnbull wins Kidson Medal.'),
+base('Europe','Paris',48.86,2.35,'Justice','REPORTED','AFP',afp('french-court-upholds-trial-order-for-depardieu-over-rape-claims','D8PR2KE'),'Depardieu trial order upheld','Appeal court backs trial; he denies rape.'),
+base('Europe','Berlin',52.52,13.41,'Justice','REPORTED','AFP',afp('alleged-russian-spy-goes-on-trial-in-berlin','D8KG663'),'Berlin espionage trial','Woman accused of spying for Russia faces court.'),
+base('Europe','London',51.51,-0.13,'Labour','REPORTED','Reuters','https://www.internazionale.it/ultime-notizie-reuters/2026/11/26/london-tube-drivers-kick-off-first-of-eight-days-of-winter-strikes','London Tube strike begins','First winter walkout disrupts travel.'),
+base('Europe','Belgrade',44.79,20.45,'Politics','REPORTED','Reuters','https://www.usnews.com/news/world/articles/2026-11-26/serbia-presidential-election-set-for-december-27','Serbia sets presidential vote','Speaker announces December 27 election date.'),
+base('Europe','European markets',50.11,8.68,'Markets','REPORTED','Reuters',r('business/finance/european-stocks-rally-tech-banks-rebound-tariff-fears-ease'),'European shares rally','Tech and banks rise as tariff worries ease.'),
+base('Africa','Accra / Kampala / Lusaka',5.60,-0.19,'Markets','FORECAST','Reuters',r('world/africa/africa-fx-ghana-uganda-zambia-currencies-expected-lose-ground'),'African FX outlook','Ghana/Uganda/Zambia seen lower.'),
+base('Oceania','Canberra',-35.28,149.13,'Energy','REPORTED','Reuters',r('business/energy/australia-set-pass-law-lng-exporters-reserve-more-gas-domestic-use'),'Australia gas vote deferred','Final LNG-law vote delayed to February.'),
+base('Asia','Seoul',37.57,126.98,'Diplomacy','OFFICIALS','Reuters',r('world/asia-pacific/south-korea-unification-minister-nominee-pledges-realistic-approach-north-korea'),'Seoul nominee’s approach','Hong Ihk-pyo pledges realism on North Korea.'),
+base('Asia','Beijing',39.90,116.41,'Diplomacy','OFFICIALS','Reuters',r('world/china/chinas-defence-ministry-urges-japan-stop-stirring-up-south-china-sea-disputes'),'China rebukes Japan','Beijing objects to South China Sea stance.'),
+base('Asia','Tokyo',35.68,139.65,'Finance','REPORTED','Reuters',r('world/asia-pacific/china-japan-south-korea-asean-launch-talks-digital-payments-across-borders'),'Asian digital-payments talks','ASEAN+3 seeks cross-border payment links.'),
+base('Europe','Brussels',50.85,4.35,'Finance','OFFICIALS','AFP',afp('spains-pablo-hernandez-de-cos-to-succeed-lagarde-as-ecb-chief','D8PW3WE'),'ECB succession backing','Diplomats: support for Hernández de Cos.',{note:'Nomination/support, not already in office.'}),
+base('Asia','Singapore',1.35,103.82,'Technology','REPORTED','Reuters / FT','https://www.ndtv.com/authors/reuters-83','Nvidia server shipment halt','FT: servers to four SE Asian nations halted.'),
+base('Asia','Tokyo',35.68,139.65,'Press freedom','OFFICIALS','AFP',afp('wife-of-japan-journalist-held-in-russia-says-family-trapped-in-grief','D8NA7G3'),'Japan presses for release','Tokyo renews call to free journalist held in Russia.'),
+base('Middle East','Taiz',13.58,44.02,'Conflict','CLAIM','AP',apGulf,'Yemen strike toll alleged','Houthi spokesman: four dead in Taiz.'),
+base('Middle East','Jazan',16.89,42.55,'Conflict','OFFICIALS','AP',apGulf,'Saudi refinery worker killed','Energy ministry says attack kills a Nepalese worker.'),
+base('Middle East','West of Dubai',25.28,54.37,'Shipping','OFFICIALS','AP',apGulf,'Tanker reports explosion','UKMTO says crew safe after incident west of Dubai.',{note:'Early-Thursday vessel incident; separate Wednesday ship excluded.'}),
+base('Africa','Northeast Nigeria',12.15,13.15,'Humanitarian','REPORTED','AFP',afp('aid-cuts-push-starving-nigerians-into-jihadist-embrace','D8H22CT'),'Nigeria’s hunger trap','Aid cuts feed armed-group recruitment, AFP reports.'),
+base('Asia','Doha',25.29,51.53,'Sport','REPORTED','PTI','https://m.rediff.com/cricket/report/asia-cup-rising-stars-2026-vaibhav-sooryavanshi-falls-for-40-abhishek-sharma-attacks-semis-sri-lanka/20261126.htm','Sri Lanka A reaches final','Beats India A by eight wickets in Doha.',{published_at:'2026-11-26T23:06:00+05:30'})
+].map((s,i)=>({id:i+1,...s}));
+
+export const timeline=[
+['00:30','Australian capex released'],
+['04:42','Colombia bank-bid report'],
+['12:08','Progress 97 docks'],
+['12:19','NASA docking report'],
+['14:00','Chess Game 3 begins'],
+['17:36','Sri Lanka A win report']
+];
